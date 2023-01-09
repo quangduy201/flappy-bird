@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "SDL2",
+            "type": "cppbuild",
+            "command": "g++.exe",
+            "args": [
+                "-g",
+                "src/*.cpp",
+                "-o",
+                "build/FlappyBird.exe",
+                "-IC:/SDK/SDL2/mingw/SDL2-2.26.2/x86_64-w64-mingw32/include",
+                "-LC:/SDK/SDL2/mingw/SDL2-2.26.2/x86_64-w64-mingw32/lib",
+                "-lmingw32",
+                "-lSDL2main",
+                "-lSDL2",
+                "-lSDL2_image",
+                // "-mwindows"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
