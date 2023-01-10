@@ -4,16 +4,17 @@
 
 auto main(int argc, char** argv) -> int
 {
+    srand(time(NULL));
     Uint32 last_time, elapsed_time;
 
     Game* game = new Game();
-    game->init("Flappy Bird", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
+    game->init(GAME_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
     while (game->isRunning())
     {
         last_time = SDL_GetTicks();
 
         game->handleEvents();
-        game->update();
+        game->update(last_time);
         game->render();
 
         elapsed_time = SDL_GetTicks() - last_time;

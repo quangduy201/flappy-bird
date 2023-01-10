@@ -4,10 +4,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-int constexpr SCREEN_WIDTH = 640;
-int constexpr SCREEN_HEIGHT = 480;
-int constexpr FULLSCREEN_MODE = false;
-int constexpr FPS = 60;
+#define GAME_TITLE "Flappy Bird"
+#define SCREEN_WIDTH 400.0f
+#define SCREEN_HEIGHT 700.0f
+#define FULLSCREEN_MODE false
+#define FPS 60
+#define IMAGE_SCALE 1.4f
+
 Uint32 constexpr frame_time = 1000 / FPS;
 
 #endif // !UTILS_H

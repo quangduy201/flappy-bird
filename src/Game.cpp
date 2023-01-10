@@ -9,7 +9,10 @@ Game::Game()
 Game::~Game()
 {
     for (auto& obstacle : obstacles)
-        delete obstacle;
+    {
+        delete obstacle.first;
+        delete obstacle.second;
+    }
     obstacles.clear();
     delete bird;
 }
@@ -59,18 +62,16 @@ void Game::init(char const* title, int x, int y, int width, int height, bool ful
         return;
     }
     std::cout << "Renderer created!..." << std::endl;
-    SDL_SetRenderDrawColor(renderer, 255, 255, 100, 0);
+
+    // Create surface for the window
+    surface = IMG_Load("res/image/background-day.png");
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
 
     // Create the bird
     bird = new Bird(renderer);
 
-    // Create the obstacles
-    int const NUM_OBSTACLES = 10;
-    obstacles.resize(NUM_OBSTACLES);
-    for (auto& obstacle : obstacles)
-    {
-        obstacle = new Obstacle(renderer);
-    }
+    // Create the null obstacle
+    obstacles.push_back(std::make_pair(new Obstacle(renderer, true, -1000, -2.5f), new Obstacle(renderer, false, -1000, -2.5f)));
 }
 
 void Game::handleEvents()
@@ -92,8 +93,8 @@ void Game::handleEvents()
                 if (event.key.keysym.sym == SDLK_SPACE)
                 {
                     bird->flap();
-                    std::cout << "p(" << bird->getPosition()->x << ", " << bird->getPosition()->y << ")" << std::endl;
-                    std::cout << "v(" << bird->getVelocity()->x << ", " << bird->getVelocity()->y << ")" << std::endl;
+                    // std::cout << "p(" << bird->getPosition()->x << ", " << bird->getPosition()->y << ")" << std::endl;
+                    // std::cout << "v(" << bird->getVelocity()->x << ", " << bird->getVelocity()->y << ")" << std::endl;
                 }
                 break;
             default:
@@ -102,18 +103,43 @@ void Game::handleEvents()
     }
 }
 
-void Game::update()
+void Game::update(Uint32 current_time)
 {
-    bird->update();
+    if (current_time - obstacle_spawn_timer > 1750)
+    {
+        int gap = rand() % (int)(SCREEN_HEIGHT - Obstacle::GAP - 200) + 100;
+
+        Obstacle* upper = new Obstacle(renderer, true, gap, -2.5f);
+        Obstacle* lower = new Obstacle(renderer, false, gap, -2.5f);
+        obstacles.push_back({ upper, lower });
+        obstacle_spawn_timer = current_time;
+
+        // Update score
+        if (bird->getPosition()->x > obstacles[1].first->getPosition()->x)
+        {
+            std::cout << ++score << std::endl;
+        }
+
+        // If the first column of obstacles pass the screen, delete it
+        if (obstacles.size() > 2)
+        {
+            delete obstacles[0].first;
+            delete obstacles[0].second;
+            obstacles.erase(obstacles.begin());
+            // std::cout << "Deleted the first obstacles" << std::endl;
+        }
+    }
+    bird->update(current_time);
 
     for (auto& obstacle : obstacles)
     {
-        obstacle->update();
+        obstacle.first->update(current_time);
+        obstacle.second->update(current_time);
     }
 
     for (auto& obstacle : obstacles)
     {
-        if (bird->isColliding(obstacle))
+        if (bird->isColliding(obstacle.first) || bird->isColliding(obstacle.second))
         {
             running = false;
             return;
@@ -125,11 +151,14 @@ void Game::render()
 {
     SDL_RenderClear(renderer);
 
+    SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+
     bird->render();
 
     for (auto& obstacle : obstacles)
     {
-        obstacle->render();
+        obstacle.first->render();
+        obstacle.second->render();
     }
 
     SDL_RenderPresent(renderer);
@@ -137,6 +166,8 @@ void Game::render()
 
 void Game::cleanUp()
 {
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

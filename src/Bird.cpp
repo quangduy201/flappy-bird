@@ -4,37 +4,61 @@
 Bird::Bird(SDL_Renderer* renderer) : renderer(renderer)
 {
     // Load the texture for the bird
-    texture = IMG_LoadTexture(renderer, "res/image/yellowbird-upflap.png");
-    if (texture == nullptr)
+    textures.push_back(IMG_LoadTexture(renderer, "res/image/yellowbird-upflap.png"));
+    textures.push_back(IMG_LoadTexture(renderer, "res/image/yellowbird-midflap.png"));
+    textures.push_back(IMG_LoadTexture(renderer, "res/image/yellowbird-downflap.png"));
+    for (auto& texture : textures)
     {
-        std::cerr << "Failed to load bird texture: " << SDL_GetError() << std::endl;
-        return;
+        if (texture == nullptr)
+        {
+            std::cerr << "Failed to load bird texture: " << SDL_GetError() << std::endl;
+            return;
+        }
     }
     std::cout << "Bird created!..." << std::endl;
-    position = new SDL_Point { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
-    velocity = new SDL_Point { 0, 0 };
+
+    current_frame = 0;
+    animation_timer = SDL_GetTicks();
+
+    position = new SDL_FPoint { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 };
+    velocity = new SDL_FPoint { 0, 0 };
 
     int w, h;
-    SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-    bounding_box = new SDL_Rect { position->x, position->y, w, h };
+    for (auto& texture : textures)
+    {
+        SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+    }
+    bounding_box = new SDL_FRect { position->x, position->y, w * IMAGE_SCALE, h * IMAGE_SCALE};
 }
 
 Bird::~Bird()
 {
-    SDL_DestroyTexture(texture);
+    for (auto& texture : textures)
+    {
+        SDL_DestroyTexture(texture);
+    }
+    textures.clear();
+    delete bounding_box;
 }
 
 void Bird::flap()
 {
-    velocity->y = -10;
+    velocity->y = -8.0f;
+    current_frame = 2;
+    animation_timer = SDL_GetTicks();
 }
 
-void Bird::update()
+void Bird::update(Uint32 current_time)
 {
+    if (current_time - animation_timer > 150)
+    {
+        current_frame = (current_frame + 1) % textures.size();
+        animation_timer = current_time;
+    }
     position->x += velocity->x;
     position->y += velocity->y;
 
-    velocity->y += 1;
+    velocity->y += 0.5f;
 
     bounding_box->x = position->x;
     bounding_box->y = position->y;
@@ -42,11 +66,11 @@ void Bird::update()
 
 void Bird::render()
 {
-    SDL_Rect dest_rect = { position->x, position->y, bounding_box->w, bounding_box->h };
-    SDL_RenderCopy(renderer, texture, nullptr, &dest_rect);
+    SDL_FRect dest_rect = { position->x, position->y, bounding_box->w, bounding_box->h };
+    SDL_RenderCopyF(renderer, textures[current_frame], nullptr, &dest_rect);
 }
 
 bool Bird::isColliding(Obstacle* obstacle)
 {
-    return SDL_HasIntersection(bounding_box, obstacle->getBoundingBox());
+    return SDL_HasIntersectionF(bounding_box, obstacle->getBoundingBox());
 }

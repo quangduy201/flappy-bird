@@ -5,13 +5,17 @@
 #include "Bird.h"
 #include "Obstacle.h"
 #include <vector>
+#include <algorithm>
 
 class Game {
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
+    SDL_Surface* surface;
+    SDL_Texture* texture;
     Bird* bird;
-    std::vector<Obstacle*> obstacles;
+    std::vector<std::pair<Obstacle*, Obstacle*>> obstacles;
+    Uint32 obstacle_spawn_timer;
     int score;
     bool running;
 
@@ -21,7 +25,7 @@ public:
 
     void init(char const* title, int x, int y, int width, int height, bool fullscreen);
     void handleEvents();
-    void update();
+    void update(Uint32 current_time);
     void render();
     void cleanUp();
     void displayGameOverMenu();
