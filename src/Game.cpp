@@ -105,17 +105,17 @@ void Game::handleEvents()
 
 void Game::update(Uint32 current_time)
 {
-    if (current_time - obstacle_spawn_timer > 1750)
+    if (current_time - obstacle_spawn_timer > 1600)
     {
         int gap = rand() % (int)(SCREEN_HEIGHT - Obstacle::GAP - 200) + 100;
 
-        Obstacle* upper = new Obstacle(renderer, true, gap, -2.5f);
-        Obstacle* lower = new Obstacle(renderer, false, gap, -2.5f);
+        Obstacle* upper = new Obstacle(renderer, true, gap, -2.6f);
+        Obstacle* lower = new Obstacle(renderer, false, gap, -2.6f);
         obstacles.push_back({ upper, lower });
         obstacle_spawn_timer = current_time;
 
         // Update score
-        if (bird->getPosition()->x > obstacles[1].first->getPosition()->x)
+        if (bird->getPosition()->x > obstacles[0].first->getPosition()->x)
         {
             std::cout << ++score << std::endl;
         }

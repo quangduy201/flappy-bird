@@ -50,7 +50,7 @@ void Bird::flap()
 
 void Bird::update(Uint32 current_time)
 {
-    if (current_time - animation_timer > 150)
+    if (current_time - animation_timer > 100)
     {
         current_frame = (current_frame + 1) % textures.size();
         animation_timer = current_time;

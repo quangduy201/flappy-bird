@@ -43,7 +43,7 @@ Obstacle::~Obstacle()
 
 void Obstacle::update(Uint32 current_time)
 {
-    float elapsed_time = (current_time - last_update_time) * 1.0f;
+    float elapsed_time = (current_time - last_update_time) / 1000.0f;
 
     position->x += velocity;
     bounding_box->x = position->x;

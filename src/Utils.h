@@ -9,7 +9,7 @@
 #define SCREEN_HEIGHT 700.0f
 #define FULLSCREEN_MODE false
 #define FPS 60
-#define IMAGE_SCALE 1.4f
+#define IMAGE_SCALE 1.6f
 
 Uint32 constexpr frame_time = 1000 / FPS;
 
