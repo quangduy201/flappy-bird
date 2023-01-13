@@ -1,44 +1,39 @@
-#include "Bird.h"
+#include "entities/Bird.h"
 #include <iostream>
 
 Bird::Bird(SDL_Renderer* renderer) : renderer(renderer)
 {
     // Load the texture for the bird
-    textures.push_back(IMG_LoadTexture(renderer, "res/image/yellowbird-upflap.png"));
-    textures.push_back(IMG_LoadTexture(renderer, "res/image/yellowbird-midflap.png"));
-    textures.push_back(IMG_LoadTexture(renderer, "res/image/yellowbird-downflap.png"));
-    for (auto& texture : textures)
+    texture = IMG_LoadTexture(renderer, "res/image/flappy-bird-sprite.png");
+    if (texture == nullptr)
     {
-        if (texture == nullptr)
-        {
-            std::cerr << "Failed to load bird texture: " << SDL_GetError() << std::endl;
-            return;
-        }
+        std::cerr << "Failed to load bird texture: " << SDL_GetError() << std::endl;
+        return;
     }
-    std::cout << "Bird created!..." << std::endl;
+    frames.push_back({ 3, 491, BIRD_PIXEL_WIDTH, BIRD_PIXEL_HEIGHT });
+    frames.push_back({ 31, 491, BIRD_PIXEL_WIDTH, BIRD_PIXEL_HEIGHT });
+    frames.push_back({ 59, 491, BIRD_PIXEL_WIDTH, BIRD_PIXEL_HEIGHT });
 
     current_frame = 0;
+    angle = 0.0;
     animation_timer = SDL_GetTicks();
 
     position = new SDL_FPoint { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 };
     velocity = new SDL_FPoint { 0, 0 };
 
-    int w, h;
-    for (auto& texture : textures)
-    {
-        SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-    }
-    bounding_box = new SDL_FRect { position->x, position->y, w * IMAGE_SCALE, h * IMAGE_SCALE};
+    bounding_box = new SDL_FRect { position->x, position->y, BIRD_PIXEL_WIDTH * IMAGE_SCALE, BIRD_PIXEL_HEIGHT * IMAGE_SCALE };
+
+    std::cout << "Bird created!..." << std::endl;
 }
 
 Bird::~Bird()
 {
-    for (auto& texture : textures)
-    {
-        SDL_DestroyTexture(texture);
-    }
-    textures.clear();
+    SDL_DestroyTexture(texture);
+    delete position;
+    delete velocity;
     delete bounding_box;
+
+    std::cout << "Bird detroyed!" << std::endl;
 }
 
 void Bird::flap()
@@ -52,7 +47,7 @@ void Bird::update(Uint32 current_time)
 {
     if (current_time - animation_timer > 100)
     {
-        current_frame = (current_frame + 1) % textures.size();
+        current_frame = (current_frame + 1) % frames.size();
         animation_timer = current_time;
     }
     position->x += velocity->x;
@@ -66,11 +61,15 @@ void Bird::update(Uint32 current_time)
 
 void Bird::render()
 {
-    SDL_FRect dest_rect = { position->x, position->y, bounding_box->w, bounding_box->h };
-    SDL_RenderCopyF(renderer, textures[current_frame], nullptr, &dest_rect);
+    SDL_RenderCopyExF(renderer, texture, &frames[current_frame], bounding_box, angle, nullptr, SDL_FLIP_NONE);
 }
 
 bool Bird::isColliding(Obstacle* obstacle)
 {
     return SDL_HasIntersectionF(bounding_box, obstacle->getBoundingBox());
+}
+
+bool Bird::isColliding(Ground* ground)
+{
+    return SDL_HasIntersectionF(bounding_box, ground->getBoundingBox());
 }

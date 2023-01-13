@@ -1,13 +1,14 @@
 #ifndef OBSTACLE_H
 #define OBSTACLE_H
 
-#include "Utils.h"
+#include "../util/Utils.h"
 
 class Obstacle
 {
 private:
     SDL_Renderer* renderer;
     SDL_Texture* texture;
+    SDL_Rect frame;
     Uint32 last_update_time;
     SDL_FPoint* position;
     float velocity;
@@ -15,7 +16,7 @@ private:
     bool is_upper;
 
 public:
-    Obstacle(SDL_Renderer* renderer, bool isUpper, int gap_pos, float velocity);
+    Obstacle(SDL_Renderer* renderer, bool is_upper, int gap_pos, float velocity);
     virtual ~Obstacle();
 
     void update(Uint32 current_time);

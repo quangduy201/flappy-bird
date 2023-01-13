@@ -1,9 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "Utils.h"
-#include "Bird.h"
-#include "Obstacle.h"
+#include "../util/Utils.h"
+#include "../entities/Bird.h"
+#include "../entities/Obstacle.h"
+#include "../entities/Ground.h"
+#include "../entities/Background.h"
 #include <vector>
 #include <algorithm>
 
@@ -11,10 +13,11 @@ class Game {
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
-    SDL_Surface* surface;
     SDL_Texture* texture;
+    Background* background;
     Bird* bird;
     std::vector<std::pair<Obstacle*, Obstacle*>> obstacles;
+    Ground* ground;
     Uint32 obstacle_spawn_timer;
     int score;
     bool running;

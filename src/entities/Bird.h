@@ -1,16 +1,19 @@
 #ifndef BIRD_H
 #define BIRD_H
 
-#include "Utils.h"
-#include "Obstacle.h"
+#include "../util/Utils.h"
+#include "../entities/Obstacle.h"
+#include "../entities/Ground.h"
 #include <vector>
 
 class Bird
 {
 private:
     SDL_Renderer* renderer;
-    std::vector<SDL_Texture*> textures;
+    SDL_Texture* texture;
+    std::vector<SDL_Rect> frames;
     int current_frame;
+    double angle;
     Uint32 animation_timer;
     SDL_FPoint* position;
     SDL_FPoint* velocity;
@@ -24,6 +27,7 @@ public:
     void update(Uint32 current_time);
     void render();
     bool isColliding(Obstacle* obstacle);
+    bool isColliding(Ground* ground);
 
     inline SDL_FPoint* getPosition() const { return position; }
     void setPosition(SDL_FPoint* position) { this->position = position; }

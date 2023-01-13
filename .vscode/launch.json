@@ -5,13 +5,13 @@
             "name": "g++ Run",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "build/FlappyBird.exe",
+            "program": "${workspaceFolder}/build/FlappyBird.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "console": "externalTerminal",
-            "preLaunchTask": "SDL2"
+            "preLaunchTask": "g++ SDL2"
         }
     ]
 }

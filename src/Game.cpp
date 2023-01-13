@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "engine/Game.h"
 #include <iostream>
 
 Game::Game()
@@ -8,13 +8,14 @@ Game::Game()
 }
 Game::~Game()
 {
+    delete bird;
     for (auto& obstacle : obstacles)
     {
         delete obstacle.first;
         delete obstacle.second;
     }
     obstacles.clear();
-    delete bird;
+    delete ground;
 }
 
 void Game::init(char const* title, int x, int y, int width, int height, bool fullscreen)
@@ -63,15 +64,17 @@ void Game::init(char const* title, int x, int y, int width, int height, bool ful
     }
     std::cout << "Renderer created!..." << std::endl;
 
-    // Create surface for the window
-    surface = IMG_Load("res/image/background-day.png");
-    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    // Create background for the game
+    texture = IMG_LoadTexture(renderer, "res/image/flappy-bird-sprite.png");
+
+    background = new Background(renderer);
 
     // Create the bird
     bird = new Bird(renderer);
 
-    // Create the null obstacle
-    obstacles.push_back(std::make_pair(new Obstacle(renderer, true, -1000, -2.5f), new Obstacle(renderer, false, -1000, -2.5f)));
+    // Create the ground
+    ground = new Ground(renderer, -2.6f);
+    std::cout << "Game started!..." << std::endl;
 }
 
 void Game::handleEvents()
@@ -107,7 +110,7 @@ void Game::update(Uint32 current_time)
 {
     if (current_time - obstacle_spawn_timer > 1600)
     {
-        int gap = rand() % (int)(SCREEN_HEIGHT - Obstacle::GAP - 200) + 100;
+        int gap = rand() % (int)(ground->getPosition()->y - Obstacle::GAP - 200) + 50;
 
         Obstacle* upper = new Obstacle(renderer, true, gap, -2.6f);
         Obstacle* lower = new Obstacle(renderer, false, gap, -2.6f);
@@ -137,6 +140,8 @@ void Game::update(Uint32 current_time)
         obstacle.second->update(current_time);
     }
 
+    ground->update(current_time);
+
     for (auto& obstacle : obstacles)
     {
         if (bird->isColliding(obstacle.first) || bird->isColliding(obstacle.second))
@@ -145,13 +150,18 @@ void Game::update(Uint32 current_time)
             return;
         }
     }
+    if (bird->isColliding(ground))
+    {
+        running = false;
+        return;
+    }
 }
 
 void Game::render()
 {
     SDL_RenderClear(renderer);
 
-    SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+    background->render();
 
     bird->render();
 
@@ -161,16 +171,18 @@ void Game::render()
         obstacle.second->render();
     }
 
+    ground->render();
+
     SDL_RenderPresent(renderer);
 }
 
 void Game::cleanUp()
 {
     SDL_DestroyTexture(texture);
-    SDL_FreeSurface(surface);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
     std::cout << "Game cleaned up!" << std::endl;
 }
 

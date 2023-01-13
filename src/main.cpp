@@ -1,5 +1,5 @@
-#include "Utils.h"
-#include "Game.h"
+#include "util/Utils.h"
+#include "engine/Game.h"
 #include <iostream>
 
 auto main(int argc, char** argv) -> int
