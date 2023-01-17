@@ -1,104 +1,30 @@
 #include "engine/Game.h"
-#include <iostream>
 
-Game::Game()
+#include <SDL2/SDL.h>
+
+Game::Game() : running(true) {}
+Game::~Game() {}
+
+void Game::init()
 {
-    running = true;
-    score = 0;
-}
-Game::~Game()
-{
-    delete bird;
-    for (auto& obstacle : obstacles)
-    {
-        delete obstacle.first;
-        delete obstacle.second;
-    }
-    obstacles.clear();
-    delete ground;
-}
-
-void Game::init(char const* title, int x, int y, int width, int height, bool fullscreen)
-{
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-    {
-        std::cerr << "SDL initialization failed: " << SDL_GetError() << std::endl;
-        running = false;
-        return;
-    }
-    std::cout << "SDL initialized!..." << std::endl;
-
-    // Initialize SDL_image
-    int img_flags = IMG_INIT_PNG;
-    if (!(IMG_Init(img_flags) & img_flags))
-    {
-        std::cerr << "SDL_image initialization failed: " << IMG_GetError() << std::endl;
-        running = false;
-        return;
-    }
-    std::cout << "SDL_image initialized!..." << std::endl;
-
-    // Create a window
-    int flags = 0;
-    if (fullscreen)
-    {
-        flags |= SDL_WINDOW_FULLSCREEN;
-    }
-    window = SDL_CreateWindow(title, x, y, width, height, flags);
-    if (window == nullptr)
-    {
-        std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
-        running = false;
-        return;
-    }
-    std::cout << "Window created!..." << std::endl;
-
-    // Create a renderer for the window
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (renderer == nullptr)
-    {
-        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
-        running = false;
-        return;
-    }
-    std::cout << "Renderer created!..." << std::endl;
-
-    // Create background for the game
-    texture = IMG_LoadTexture(renderer, "res/image/flappy-bird-sprite.png");
-
-    background = new Background(renderer);
-
-    // Create the bird
-    bird = new Bird(renderer);
-
-    // Create the ground
-    ground = new Ground(renderer, -2.6f);
-    std::cout << "Game started!..." << std::endl;
+    window.init(GAME_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
+    current_scene = std::make_unique<MainMenuScene>("main menu", window.renderer);
+    current_scene->init();
 }
 
 void Game::handleEvents()
 {
+    window.handleEvents();
+    current_scene->handleEvents();
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
         switch (event.type)
         {
+            case SDL_KEYDOWN:
+                break;
             case SDL_QUIT:
                 running = false;
-                break;
-            case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_ESCAPE)
-                {
-                    displayPauseMenu();
-                    running = false;
-                }
-                if (event.key.keysym.sym == SDLK_SPACE)
-                {
-                    bird->flap();
-                    // std::cout << "p(" << bird->getPosition()->x << ", " << bird->getPosition()->y << ")" << std::endl;
-                    // std::cout << "v(" << bird->getVelocity()->x << ", " << bird->getVelocity()->y << ")" << std::endl;
-                }
                 break;
             default:
                 break;
@@ -106,92 +32,57 @@ void Game::handleEvents()
     }
 }
 
-void Game::update(Uint32 current_time)
+void Game::update(float delta_time)
 {
-    if (current_time - obstacle_spawn_timer > 1600)
-    {
-        int gap = rand() % (int)(ground->getPosition()->y - Obstacle::GAP - 200) + 50;
-
-        Obstacle* upper = new Obstacle(renderer, true, gap, -2.6f);
-        Obstacle* lower = new Obstacle(renderer, false, gap, -2.6f);
-        obstacles.push_back({ upper, lower });
-        obstacle_spawn_timer = current_time;
-
-        // Update score
-        if (bird->getPosition()->x > obstacles[0].first->getPosition()->x)
-        {
-            std::cout << ++score << std::endl;
-        }
-
-        // If the first column of obstacles pass the screen, delete it
-        if (obstacles.size() > 2)
-        {
-            delete obstacles[0].first;
-            delete obstacles[0].second;
-            obstacles.erase(obstacles.begin());
-            // std::cout << "Deleted the first obstacles" << std::endl;
-        }
-    }
-    bird->update(current_time);
-
-    for (auto& obstacle : obstacles)
-    {
-        obstacle.first->update(current_time);
-        obstacle.second->update(current_time);
-    }
-
-    ground->update(current_time);
-
-    for (auto& obstacle : obstacles)
-    {
-        if (bird->isColliding(obstacle.first) || bird->isColliding(obstacle.second))
-        {
-            running = false;
-            return;
-        }
-    }
-    if (bird->isColliding(ground))
-    {
-        running = false;
-        return;
-    }
+    window.update(delta_time);
+    current_scene->update(delta_time);
 }
 
 void Game::render()
 {
-    SDL_RenderClear(renderer);
+    SDL_RenderClear(window.renderer);
 
-    background->render();
+    window.render();
+    current_scene->render();
 
-    bird->render();
-
-    for (auto& obstacle : obstacles)
-    {
-        obstacle.first->render();
-        obstacle.second->render();
-    }
-
-    ground->render();
-
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(window.renderer);
 }
 
 void Game::cleanUp()
 {
-    SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
-    std::cout << "Game cleaned up!" << std::endl;
+    window.cleanUp();
+    current_scene->cleanUp();
+    current_scene.reset(nullptr);
 }
 
-void Game::displayGameOverMenu()
+void Game::changeScene(std::unique_ptr<Scene> new_scene)
 {
-
+    current_scene->cleanUp();
+    current_scene = std::move(new_scene);
+    current_scene->init();
 }
 
-void Game::displayPauseMenu()
+bool Game::isRunning()
 {
+    return running && window.running && current_scene->running;
+}
 
+void Game::run()
+{
+    Uint32 previous_time, current_time, elapsed_time;
+    float delta_time;
+    while (isRunning())
+    {
+        handleEvents();
+
+        current_time = SDL_GetTicks();
+        delta_time = (current_time - previous_time) / 1000.0f;
+
+        update(delta_time);
+        render();
+
+        previous_time = current_time;
+        elapsed_time = SDL_GetTicks() - previous_time;
+        SDL_Delay(std::max(0, (int)(FRAME_TIME - elapsed_time)));
+    }
 }

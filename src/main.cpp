@@ -2,25 +2,31 @@
 #include "engine/Game.h"
 #include <iostream>
 
+Game *game = nullptr;
+
 auto main(int argc, char** argv) -> int
 {
     srand(time(NULL));
-    Uint32 last_time, elapsed_time;
+    Uint32 previous_time, current_time, elapsed_time;
+    float delta_time;
 
-    Game* game = new Game();
-    game->init(GAME_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
-    while (game->isRunning())
-    {
-        last_time = SDL_GetTicks();
+    game = new Game();
+    game->init();
+    // while (game->isRunning())
+    // {
+    //     game->handleEvents();
 
-        game->handleEvents();
-        game->update(last_time);
-        game->render();
+    //     current_time = SDL_GetTicks();
+    //     delta_time = (current_time - previous_time) / 1000.0f;
 
-        elapsed_time = SDL_GetTicks() - last_time;
-        if (elapsed_time < frame_time)
-            SDL_Delay(frame_time - elapsed_time);
-    }
+    //     game->update(delta_time);
+    //     game->render();
+
+    //     previous_time = current_time;
+    //     elapsed_time = SDL_GetTicks() - previous_time;
+    //     SDL_Delay(std::max(0, (int)(FRAME_TIME - elapsed_time)));
+    // }
+    game->run();
 
     game->cleanUp();
     delete game;

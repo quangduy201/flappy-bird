@@ -30,7 +30,7 @@ Ground::~Ground()
     std::cout << "Ground destroyed!" << std::endl;
 }
 
-void Ground::update(Uint32 current_time)
+void Ground::update(float current_time)
 {
     float elapsed_time = (current_time - last_update_time) / 1000.0f;
 

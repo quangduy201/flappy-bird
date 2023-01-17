@@ -14,7 +14,7 @@ private:
     std::vector<SDL_Rect> frames;
     int current_frame;
     double angle;
-    Uint32 animation_timer;
+    float animation_timer;
     SDL_FPoint* position;
     SDL_FPoint* velocity;
     SDL_FRect* bounding_box;
@@ -24,7 +24,7 @@ public:
     virtual ~Bird();
 
     void flap();
-    void update(Uint32 current_time);
+    void update(float current_time);
     void render();
     bool isColliding(Obstacle* obstacle);
     bool isColliding(Ground* ground);

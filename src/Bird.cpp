@@ -43,7 +43,7 @@ void Bird::flap()
     animation_timer = SDL_GetTicks();
 }
 
-void Bird::update(Uint32 current_time)
+void Bird::update(float current_time)
 {
     if (current_time - animation_timer > 100)
     {
