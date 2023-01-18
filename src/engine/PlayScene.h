@@ -9,32 +9,67 @@
 class PlayScene : public Scene
 {
 public:
-    PlayScene(std::string name, SDL_Renderer *renderer) : Scene(name, renderer) {}
+    EntityID birdID;
+    EntityID backgroundID;
+    EntityID groundID;
+    EntityID obstacleID;
+
+    PlayScene(std::string name) : Scene(name) {}
     ~PlayScene() {}
 
     void init() override
     {
-        // Initialize any necessary resources for the main menu scene
-        auto bird = entity_manager.createEntity();
-        entity_manager.entities[bird]->addComponent<TransformComponent>();
-        entity_manager.entities[bird]->addComponent<SpriteComponent>();
+        // Bird
+        birdID = entity_manager.createEntity();
+        auto &bird = entity_manager.entities[birdID];
+        bird->addComponent<TransformComponent>(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+        bird->addComponent<RigidBodyComponent>(1.0f, 0.5f);
+        auto &bird_sprite = bird->addComponent<SpriteComponent>("res/image/flappy-bird-sprite.png");
 
-        auto background = entity_manager.createEntity();
-        entity_manager.entities[background]->addComponent<TransformComponent>();
-        entity_manager.entities[background]->addComponent<SpriteComponent>();
+        std::vector<SDL_Rect> bird_frames;
+        bird_frames.push_back({ 3, 491, BIRD_PIXEL_WIDTH, BIRD_PIXEL_HEIGHT });
+        bird_frames.push_back({ 31, 491, BIRD_PIXEL_WIDTH, BIRD_PIXEL_HEIGHT });
+        bird_frames.push_back({ 59, 491, BIRD_PIXEL_WIDTH, BIRD_PIXEL_HEIGHT });
+        bird_sprite.addAnimation("flap", bird_frames, 0.05f);
+        bird_sprite.play("flap");
+        bird_sprite.width = 17;
+        bird_sprite.height = 12;
 
-        auto ground = entity_manager.createEntity();
-        entity_manager.entities[ground]->addComponent<TransformComponent>();
-        entity_manager.entities[ground]->addComponent<SpriteComponent>();
+        // Background
+        backgroundID = entity_manager.createEntity();
+        auto &background = entity_manager.entities[backgroundID];
+        background->addComponent<TransformComponent>(0.0f, 0.0f);
+        background->addComponent<RigidBodyComponent>(1.0f, 0.0f);
+        auto &background_sprite = background->addComponent<SpriteComponent>("res/image/flappy-bird-sprite.png");
 
-        auto obstacle = entity_manager.createEntity();
-        entity_manager.entities[obstacle]->addComponent<TransformComponent>();
-        entity_manager.entities[obstacle]->addComponent<SpriteComponent>();
+        std::vector<SDL_Rect> background_frames;
+        background_frames.push_back({ 0, 0, BACKGROUND_PIXEL_WIDTH, BACKGROUND_PIXEL_HEIGHT });
+        background_sprite.addAnimation("background", background_frames, 0.05f);
+        background_sprite.play("background");
+        background_sprite.width = 144;
+        background_sprite.height = 256;
+
+        // Ground
+        groundID = entity_manager.createEntity();
+        auto &ground = entity_manager.entities[groundID];
+        ground->addComponent<TransformComponent>(0, 500);
+        auto &ground_sprite = ground->addComponent<SpriteComponent>("res/image/flappy-bird-sprite.png");
+
+        std::vector<SDL_Rect> ground_frames;
+        ground_frames.push_back({ 292, 0, GROUND_PIXEL_WIDTH, GROUND_PIXEL_HEIGHT });
+        ground_sprite.addAnimation("ground", ground_frames, 0.05f);
+        ground_sprite.play("ground");
+        ground_sprite.width = 168;
+        ground_sprite.height = 56;
+
+        // Obstacle
+        obstacleID = entity_manager.createEntity();
+        auto &obstacle = entity_manager.entities[obstacleID];
+
     }
 
     void update(float delta_time) override
     {
-        // Update any necessary systems for the main menu scene
         auto &bird = entity_manager.entities[0];
         auto &background = entity_manager.entities[1];
 
@@ -48,12 +83,11 @@ public:
 
     void render() override
     {
-        // Render the main menu scene
+        entity_manager.render();
     }
 
     void handleEvents() override
     {
-        // Cleanup any resources used by the main menu scene
     }
 
     void cleanUp() override

@@ -14,8 +14,8 @@ public:
     float rotation_speed;
     float speed;
 
-    TransformComponent() : position({ 0.0f, 0.0f }), scale({ 0.0f, 0.0f }), rotation(0.0f), speed(0.0f) {}
-    TransformComponent(const float &x, const float &y) : position({ x, y }) {}
+    TransformComponent() : position({ 0.0f, 0.0f }), scale({ 0.0f, 0.0f }), scale_speed(0.0f), rotation(0.0f), rotation_speed(0.0f), speed(0.0f) {}
+    TransformComponent(const float &x, const float &y) : position({ x, y }), scale({ 0.0f, 0.0f }), scale_speed(0.0f), rotation(0.0f), rotation_speed(0.0f), speed(0.0f) {}
     TransformComponent(const Vector2 &position) : position(position) {}
     TransformComponent(const Vector2 &position, const float &rotation, const Vector2 &scale)
         : position(position), rotation(rotation), scale(scale) {}
@@ -35,8 +35,6 @@ public:
         }
         // Update rotation based on rotation speed
         rotation += rotation_speed * delta_time;
-        // Update scale based on scale speed
-        scale += scale_speed * delta_time;
     }
 
     void render() override

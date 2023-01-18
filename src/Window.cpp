@@ -51,7 +51,7 @@ void Window::init(const char *title, int x, int y, int width, int height, bool f
         return;
     }
     std::cout << "Renderer created!..." << std::endl;
-    SDL_SetRenderDrawColor(renderer, 100, 255, 255, 1);
+    // SDL_SetRenderDrawColor(renderer, 100, 0, 255, 1);
 
     // // Get the texture of the game
     // texture = IMG_LoadTexture(renderer, "res/image/flappy-bird-sprite.png");

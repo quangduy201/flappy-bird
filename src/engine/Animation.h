@@ -20,6 +20,11 @@ public:
         if (current_frame >= frames.size())
             current_frame = 0;
     }
+
+    SDL_Rect getCurrentFrame()
+    {
+        return frames[current_frame];
+    }
 };
 
 #endif // !ANIMATION_H

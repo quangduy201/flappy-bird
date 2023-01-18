@@ -8,7 +8,7 @@ Game::~Game() {}
 void Game::init()
 {
     window.init(GAME_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
-    current_scene = std::make_unique<MainMenuScene>("main menu", window.renderer);
+    current_scene = std::make_unique<MainMenuScene>("main menu");
     current_scene->init();
 }
 

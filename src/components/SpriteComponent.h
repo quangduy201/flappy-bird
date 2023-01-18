@@ -49,10 +49,9 @@ public:
 
     void render() override
     {
-        Animation animation = animations[current_animation];
         auto &transform = entity->getComponent<TransformComponent>();
         SDL_Rect dst_rect = { (int)transform.position.x, (int)transform.position.y, width, height };
-        TextureManager::Draw(texture, animation.frames[animation.current_frame], dst_rect, transform.rotation, nullptr, SDL_FLIP_NONE);
+        TextureManager::Draw(texture, animations[current_animation].getCurrentFrame(), dst_rect, transform.rotation, nullptr, SDL_FLIP_NONE);
     }
 };
 

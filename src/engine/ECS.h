@@ -5,6 +5,7 @@
 #include <memory>
 #include <algorithm>
 #include <unordered_map>
+#include <map>
 #include <bitset>
 #include <array>
 #include <vector>
@@ -23,7 +24,7 @@ constexpr std::size_t MAX_GROUP = 32;
 using ComponentBitset = std::bitset<MAX_COMPONENTS>;
 using ComponentArray = std::array<Component*, MAX_COMPONENTS>;
 using ComponentUPtr = std::vector<std::unique_ptr<Component>>;
-using EntityMap = std::unordered_map<EntityID, std::unique_ptr<Entity>>;
+using EntityMap = std::map<EntityID, std::unique_ptr<Entity>>;
 using GroupMap = std::unordered_map<GroupID, std::vector<Entity*>>;
 
 class Component
@@ -45,8 +46,8 @@ public:
     static inline ComponentID getComponentTypeID() noexcept
     {
         static_assert (std::is_base_of<Component, T>::value, "");
-        static ComponentID typeID{ getComponentType() };
-        return typeID;
+        static ComponentID type_id{ getComponentType() };
+        return type_id;
     }
 
     virtual ~Component() = default;

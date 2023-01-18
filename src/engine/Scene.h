@@ -9,12 +9,11 @@ class Scene
 {
 public:
     std::string name;
-    SDL_Renderer *renderer;
     Camera camera;
     EntityManager entity_manager;
     bool running;
 
-    Scene(std::string name, SDL_Renderer* renderer) : name(name), renderer(renderer), running(true) {}
+    Scene(std::string name) : name(name), running(true) {}
     virtual ~Scene() = default;
 
     virtual void init() = 0;

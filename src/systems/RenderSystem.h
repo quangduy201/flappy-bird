@@ -21,8 +21,8 @@ public:
             auto &transform = entity->getComponent<TransformComponent>();
 
             // render the entity's sprite at its position
-            SDL_Rect dest = { transform.position.x, transform.position.y, sprite.width, sprite.height };
-            // SDL_RenderCopy(Window::renderer, sprite.texture, &sprite.srcRect, &dest);
+            SDL_Rect dst = { transform.position.x, transform.position.y, sprite.width, sprite.height };
+            SDL_RenderCopy(Window::renderer, sprite.texture, &sprite.animations[sprite.current_animation].getCurrentFrame(), &dst);
         }
     }
 };

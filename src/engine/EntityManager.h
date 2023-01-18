@@ -36,9 +36,10 @@ public:
             if (!entity->hasComponents<TransformComponent>()) continue;
             if (!entity->hasComponents<SpriteComponent>()) continue;
 
-            for (auto &component : entity->components_array)
-                if (component)
-                    component->update(delta_time);
+            for (std::size_t i = 0; i < MAX_COMPONENTS; ++i)
+                if (entity->components_mask[i]) {
+                    entity->components_array[i]->update(delta_time);
+                }
         }
     }
 
@@ -50,9 +51,9 @@ public:
             if (!entity->hasComponents<TransformComponent>()) continue;
             if (!entity->hasComponents<SpriteComponent>()) continue;
 
-            for (auto &component : entity->components_array)
-                if (component)
-                    component->render();
+            for (std::size_t i = 0; i < MAX_COMPONENTS; ++i)
+                if (entity->components_mask[i])
+                    entity->components_array[i]->render();
         }
     }
 
