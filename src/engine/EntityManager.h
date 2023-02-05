@@ -8,19 +8,21 @@ class EntityManager : public Manager
 {
 public:
     EntityMap entities;
-    EntityID next_id = 0;
+    EntityID next_id = 0u;
 
     EntityManager() : next_id(0) {}
     virtual ~EntityManager() {}
 
     void init()
     {
-        next_id = 0;
+        next_id = 0u;
     }
 
     // Function to create a new entity
     EntityID createEntity()
     {
+        while (entities.find(next_id) != entities.end())
+            next_id++;
         EntityID id = next_id;
         next_id++;
         entities[id] = std::make_unique<Entity>();

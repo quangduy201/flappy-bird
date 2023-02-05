@@ -20,7 +20,7 @@ public:
     bool is_animated;
 
     SpriteComponent() {}
-    SpriteComponent(std::string const &path)
+    SpriteComponent(const std::string &path)
     {
         texture = TextureManager::LoadTexture(path);
         SDL_QueryTexture(texture, NULL, NULL, &width, &height);
@@ -49,8 +49,10 @@ public:
 
     void render() override
     {
+        if (!entity->hasComponents<TransformComponent>())
+            return;
         auto &transform = entity->getComponent<TransformComponent>();
-        SDL_Rect dst_rect = { (int)transform.position.x, (int)transform.position.y, width, height };
+        SDL_FRect dst_rect = { transform.position.x, transform.position.y, width * 1.0f, height * 1.0f };
         TextureManager::Draw(texture, animations[current_animation].getCurrentFrame(), dst_rect, transform.rotation, nullptr, SDL_FLIP_NONE);
     }
 };

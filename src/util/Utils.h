@@ -1,10 +1,13 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
 #define GAME_TITLE "Flappy Bird"
-#define SCREEN_WIDTH 400.0f
-#define SCREEN_HEIGHT 700.0f
-#define FULLSCREEN_MODE false
+#define SCREEN_WIDTH 432.0f
+#define SCREEN_HEIGHT 768.0f
+#define WINDOW_FLAG 0u
 #define FPS 60
 #define FRAME_TIME 1000.0f / FPS
 
@@ -20,6 +23,8 @@
 #define OBSTACLE_PIXEL_WIDTH  26
 #define OBSTACLE_PIXEL_HEIGHT 160
 
-#define IMAGE_SCALE 2 * 1.6f
+#define IMAGE_SCALE SCREEN_WIDTH / BACKGROUND_PIXEL_WIDTH
+
+#define GAP 160
 
 #endif // !UTILS_H

@@ -1,12 +1,12 @@
 #include "engine/Window.h"
 
-SDL_Renderer *Window::renderer = nullptr;
-bool Window::running = true;
+// SDL_Renderer *Window::renderer = nullptr;
+// bool Window::running = true;
 
 Window::Window() {}
 Window::~Window() {}
 
-void Window::init(const char *title, int x, int y, int width, int height, bool fullscreen)
+void Window::init(const char *title, int x, int y, int width, int height, Uint32 flags)
 {
     // Initialize SDL
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -28,11 +28,6 @@ void Window::init(const char *title, int x, int y, int width, int height, bool f
     std::cout << "SDL_image initialized!..." << std::endl;
 
     // Create a window
-    int flags = 0;
-    if (fullscreen)
-    {
-        flags |= SDL_WINDOW_FULLSCREEN;
-    }
     window = SDL_CreateWindow(title, x, y, width, height, flags);
     if (window == nullptr)
     {
@@ -62,6 +57,7 @@ void Window::init(const char *title, int x, int y, int width, int height, bool f
     //     return;
     // }
     // std::cout << "Texture loaded!..." << std::endl;
+    running = true;
 }
 
 void Window::handleEvents()

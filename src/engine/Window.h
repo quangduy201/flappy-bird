@@ -9,14 +9,13 @@ class Window
 {
 public:
     SDL_Window *window;
-    static SDL_Renderer *renderer;
-    // SDL_Texture *texture;
-    static bool running;
+    SDL_Renderer *renderer;
+    bool running;
 
     Window();
     virtual ~Window();
 
-    void init(const char *title, int x, int y, int width, int height, bool fullscreen);
+    void init(const char *title, int x, int y, int width, int height, Uint32 flags);
 
     void update(float delta_time);
 

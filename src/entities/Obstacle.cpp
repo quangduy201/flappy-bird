@@ -23,7 +23,7 @@ Obstacle::Obstacle(SDL_Renderer* renderer, bool is_upper, int gap_pos, float vel
     else
     {
         pos_x = SCREEN_WIDTH;
-        pos_y = gap_pos + Obstacle::GAP;
+        // pos_y = gap_pos + Obstacle::GAP;
     }
 
     position = new SDL_FPoint { pos_x, pos_y };

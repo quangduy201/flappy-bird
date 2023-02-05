@@ -19,7 +19,7 @@ public:
     virtual void init() = 0;
     virtual void update(float delta_time) = 0;
     virtual void render() = 0;
-    virtual void handleEvents() = 0;
+    virtual void handleEvents(SDL_Event &event) = 0;
     virtual void cleanUp()
     {
         entity_manager.destroyAllEntities();

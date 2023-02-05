@@ -3,6 +3,7 @@
 
 #include "../engine/ECS.h"
 #include "../util/Vector2.h"
+#include "RigidBodyComponent.h"
 
 class TransformComponent : public Component
 {

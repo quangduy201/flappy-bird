@@ -24,7 +24,7 @@ constexpr std::size_t MAX_GROUP = 32;
 using ComponentBitset = std::bitset<MAX_COMPONENTS>;
 using ComponentArray = std::array<Component*, MAX_COMPONENTS>;
 using ComponentUPtr = std::vector<std::unique_ptr<Component>>;
-using EntityMap = std::map<EntityID, std::unique_ptr<Entity>>;
+using EntityMap = std::map<EntityID, std::shared_ptr<Entity>>;
 using GroupMap = std::unordered_map<GroupID, std::vector<Entity*>>;
 
 class Component

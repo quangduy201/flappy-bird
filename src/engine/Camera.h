@@ -7,11 +7,14 @@ class Camera
 {
 public:
     Vector2 position;
-    int w, h;
+    float width, height;
 
     Camera() {}
-    Camera(int width, int height) : w(width), h(height) {}
-    void setPosition(Vector2 pos) { position = pos; }
+    Camera(float width, float height) : width(width), height(height) {}
+    void follow(Vector2 target)
+    {
+        position = target;
+    }
 };
 
 #endif // !CAMERA_H

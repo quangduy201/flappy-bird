@@ -10,9 +10,9 @@
 class Game
 {
 public:
-    Window window;
-    std::unique_ptr<Scene> current_scene;
-    bool running;
+    static Window window;
+    static std::unique_ptr<Scene> current_scene;
+    static bool running;
 
     Game();
     ~Game();
@@ -21,7 +21,7 @@ public:
     void update(float delta_time);
     void render();
     void cleanUp();
-    void changeScene(std::unique_ptr<Scene> new_scene);
+    void changeScene(std::unique_ptr<Scene> &new_scene);
     inline bool isRunning();
     void run();
 };

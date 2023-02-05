@@ -8,7 +8,7 @@ class Animation
 {
 public:
     std::vector<SDL_Rect> frames;
-    int current_frame;
+    float current_frame;
     float time;
 
     Animation() {}
@@ -23,7 +23,7 @@ public:
 
     SDL_Rect getCurrentFrame()
     {
-        return frames[current_frame];
+        return frames[(int)current_frame];
     }
 };
 

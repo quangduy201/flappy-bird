@@ -2,31 +2,52 @@
 
 #include <SDL2/SDL.h>
 
-Game::Game() : running(true) {}
+Window Game::window;
+std::unique_ptr<Scene> Game::current_scene;
+bool Game::running = true;
+
+Game::Game() {}
 Game::~Game() {}
 
 void Game::init()
 {
-    window.init(GAME_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_MODE);
+    window.init(GAME_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_FLAG);
     current_scene = std::make_unique<MainMenuScene>("main menu");
     current_scene->init();
 }
 
 void Game::handleEvents()
 {
-    window.handleEvents();
-    current_scene->handleEvents();
+    auto &bird = current_scene->entity_manager.entities[1];
+    // window.handleEvents();
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
+        // current_scene->handleEvents(event);
         switch (event.type)
         {
             case SDL_KEYDOWN:
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                    running = false;
+                if (event.key.keysym.sym == SDLK_SPACE || event.key.keysym.sym == SDLK_UP)
+                {
+                    if (current_scene->name.compare("main menu") == 0)
+                    {
+                        std::unique_ptr<Scene> new_scene = std::make_unique<PlayScene>("play");
+                        changeScene(new_scene);
+                    }
+                    else
+                    {
+                        auto &bird_rigidbody = bird->getComponent<RigidBodyComponent>();
+                        bird_rigidbody.velocity.y = -180.0f;
+                    }
+                }
                 break;
             case SDL_QUIT:
                 running = false;
                 break;
             default:
+            // std::cout << current_scene->name << std::endl;
                 break;
         }
     }
@@ -55,7 +76,7 @@ void Game::cleanUp()
     current_scene.reset(nullptr);
 }
 
-void Game::changeScene(std::unique_ptr<Scene> new_scene)
+void Game::changeScene(std::unique_ptr<Scene> &new_scene)
 {
     current_scene->cleanUp();
     current_scene = std::move(new_scene);

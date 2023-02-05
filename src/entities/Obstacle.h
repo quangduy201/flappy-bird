@@ -26,7 +26,7 @@ public:
     void render();
     inline SDL_FPoint* getPosition() const { return position; }
     inline SDL_FRect* getBoundingBox() const { return bounding_box; }
-    static int constexpr GAP = 150;
+    // static int constexpr GAP = 150;
 };
 
 #endif // !OBSTACLE_H
